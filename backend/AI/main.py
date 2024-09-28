@@ -25,16 +25,20 @@ def create_word_to_class_mapping(words):
     word_to_class = {word: idx for idx, word in enumerate(sorted(set(words)))}
     return word_to_class
 
-def prepare_data(features, words, word_to_class):
+
+
+
+
+def prepare_data(features, words, word_to_class, device):
     """
     Convert features and words into PyTorch tensors with numerical labels.
     Features are kept as is, and words are converted to class indices.
     """
-    X_train = [torch.tensor(feature, dtype=torch.float) for feature in features]
+    X_train = [torch.tensor(feature, dtype=torch.float).to(device) for feature in features]
     word_labels = [word_to_class[word] for word in words]
     
     X_train = torch.stack(X_train)
-    word_labels = torch.tensor(word_labels, dtype=torch.long)
+    word_labels = torch.tensor(word_labels, dtype=torch.long).to(device)
     
     return X_train, word_labels
 
@@ -61,6 +65,9 @@ def main(pkl_file):
     
     # Initialize the model and move it to GPU if available
     model = MultiOutputRNN(input_size, hidden_size, num_classes).to(device)
+    print(f"Model is on GPU: {next(model.parameters()).is_cuda}")
+    print(f"CUDA Device: {torch.cuda.get_device_name(0)}")
+    print(f"CUDA Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**2:.2f} MB")
     
     # Train the model
     train_model(model, train_loader, num_epochs, device)
