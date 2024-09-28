@@ -5,11 +5,8 @@ def predict(model, sample_features, word_to_class, device):
     model.eval()
     
     with torch.no_grad():
-        # Move features to GPU if available
-        sample_features = sample_features.to(device)
-        
         # Forward pass to get outputs
-        word_output, similarity_output = model(sample_features.unsqueeze(0))  # Add batch dimension
+        word_output, similarity_output = model(sample_features)
         
         # Get predicted word (class with highest probability)
         predicted_class = torch.argmax(word_output, dim=1).item()

@@ -3,8 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 
 def train_model(model, train_loader, num_epochs, device):
-    # Loss function
-    criterion = nn.CrossEntropyLoss()
+    # Loss functions
+    criterion_word = nn.CrossEntropyLoss()
+    criterion_similarity = nn.MSELoss()
     
     # Optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -21,14 +22,22 @@ def train_model(model, train_loader, num_epochs, device):
             optimizer.zero_grad()
             
             # Forward pass
-            word_output, _ = model(features)
+            word_output, similarity_output = model(features)
             
-            # Compute loss
-            loss = criterion(word_output, word_labels)
+            # Compute losses
+            loss_word = criterion_word(word_output, word_labels)
+            # For now, we'll use a dummy target for similarity (all ones)
+            similarity_target = torch.ones_like(similarity_output)
+            loss_similarity = criterion_similarity(similarity_output, similarity_target)
+            
+            # Total loss (you can adjust the weights if needed)
+            loss = loss_word + 0.1 * loss_similarity
             
             # Backward pass and optimization
             loss.backward()
             optimizer.step()
             
             if (i+1) % 10 == 0:
-                print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}], Loss: {loss.item():.4f}')
+                print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}], '
+                      f'Loss: {loss.item():.4f}, Word Loss: {loss_word.item():.4f}, '
+                      f'Similarity Loss: {loss_similarity.item():.4f}')
