@@ -6,7 +6,7 @@ from training import train_model
 from utils import predict
 
 # Path to the preprocessed data
-PKL_FILE = 'data.pkl'
+PKL_FILE = 'language.plusplus/data.pkl'
 
 # Check if CUDA is available and set the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -24,10 +24,6 @@ def create_word_to_class_mapping(words):
     """
     word_to_class = {word: idx for idx, word in enumerate(sorted(set(words)))}
     return word_to_class
-
-
-
-
 
 def prepare_data(features, words, word_to_class, device):
     """
@@ -50,8 +46,13 @@ def main(pkl_file):
     word_to_class = create_word_to_class_mapping(words)
     print(f"Number of unique words: {len(word_to_class)}")
     
+    # Print CUDA device information
+    if torch.cuda.is_available():
+        print(f"CUDA Device: {torch.cuda.get_device_name(0)}")
+        print(f"CUDA Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**2:.2f} MB")
+    
     # Prepare the data for training
-    X_train, word_labels = prepare_data(features, words, word_to_class)
+    X_train, word_labels = prepare_data(features, words, word_to_class, device)
     
     # Create a DataLoader for training
     train_dataset = TensorDataset(X_train, word_labels)
@@ -66,8 +67,6 @@ def main(pkl_file):
     # Initialize the model and move it to GPU if available
     model = MultiOutputRNN(input_size, hidden_size, num_classes).to(device)
     print(f"Model is on GPU: {next(model.parameters()).is_cuda}")
-    print(f"CUDA Device: {torch.cuda.get_device_name(0)}")
-    print(f"CUDA Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**2:.2f} MB")
     
     # Train the model
     train_model(model, train_loader, num_epochs, device)
