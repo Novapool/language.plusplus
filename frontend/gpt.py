@@ -1,6 +1,5 @@
-
-from dotenv import load_dotenv
 from openai import OpenAI
+import streamlit as st
 
 CONTENT = """So you are a language training assistant. A user will will your 
 capabilities to enhance a language that they already know. The user has been presented with a phrase
@@ -11,7 +10,7 @@ give them some helpful tips of how to improve based on their specific custom pro
 Then at the end, you are to continue providing them with another phrase in the same language. Make
 the difficulty of the pronunciation depend on the user's previous performance."""
 
-load_dotenv()
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 client = OpenAI()
 

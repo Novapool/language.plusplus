@@ -1,22 +1,18 @@
 import streamlit as st
 import numpy as np
 import tempfile
-# from dotenv import load_dotenv
 import os
 import base64
 
 from gpt import gpt
-
-# load_dotenv()
-
 
 from st_audiorec import st_audiorec
 
 import azure.cognitiveservices.speech as speechsdk
 
 # Replace with your own subscription key and service region (e.g., "westus").
-SUBSCRIPTION_KEY = os.getenv("SUBSCRIPTION_KEY")
-SERVICE_REGION =  os.getenv("SERVICE_REGION")
+SUBSCRIPTION_KEY = st.secrets["SUBSCRIPTION_KEY"]
+SERVICE_REGION =  st.secrets["SERVICE_REGION"]
 
 # Set up the speech configuration
 
