@@ -8,6 +8,8 @@ from gpt import gpt
 
 from st_audiorec import st_audiorec
 
+from audio_recorder_streamlit import audio_recorder
+
 import azure.cognitiveservices.speech as speechsdk
 
 # Replace with your own subscription key and service region (e.g., "westus").
@@ -197,12 +199,16 @@ def page2():
             st.write(f"You selected {st.session_state.language}.")
             st.markdown("<p class='description'>Please start speaking to record your voice.</p>", unsafe_allow_html=True)
             
-            wav_audio_data = st_audiorec()
+            # wav_audio_data = st_audiorec()
 
-            if wav_audio_data is not None:
+            audio_bytes = audio_recorder(text="", icon_size="3x", icon_name="microphone-lines")
+            if audio_bytes:
+            #     st.audio(audio_bytes, format="audio/wav")
+
+            # if wav_audio_data is not None:
                 with st.spinner("Processing audio..."):
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-                        tmpfile.write(wav_audio_data)
+                        tmpfile.write(audio_bytes)
                         tmpfile.flush()
                         text, accuracy, fluency = getRating(tmpfile.name, st.session_state.language_code)
 
