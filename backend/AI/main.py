@@ -70,7 +70,7 @@ def main(pkl_file):
     input_size = features[0][0].shape[0]  # Number of MFCC coefficients (should be 100)
     hidden_size = 128
     num_classes = len(word_to_class)  # Number of unique words in the dataset
-    num_epochs = 10
+    num_epochs = 100
     
     # Initialize the model and move it to GPU if available
     model = MultiOutputRNN(input_size, hidden_size, num_classes).to(device)
