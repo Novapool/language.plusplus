@@ -46,7 +46,6 @@ def process_audio(audio_path, target_duration=3.0):
     
     return normalized_features
 
-
 def load_model(model_path, input_size, hidden_size, num_classes, device):
     model = MultiOutputRNN(input_size, hidden_size, num_classes).to(device)
     model.load_state_dict(torch.load(model_path, map_location=device))
@@ -90,14 +89,18 @@ def main(audio_path, model_path, word_to_class_path):
     # Predict
     predicted_word, similarity_score = predict(model, features, word_to_class, device)
 
-    print(f"Predicted word: {predicted_word}")
-    print(f"Similarity score: {similarity_score:.4f}")
+    # Print results
+    print(f"Predicted Word: {predicted_word}, Similarity Score: {similarity_score:.4f}")
+
+    return predicted_word, similarity_score
 
 if __name__ == "__main__":
     save_dir = os.path.join('backend', 'AI')
 
-    audio_path = "path/to/your/audio.wav"  # Replace with your audio file path
+    audio_path = os.path.join('backend', 'AI', 'test_audio', 'audio.wav')
     model_path = os.path.join(save_dir, "trained_model.pth")
     word_to_class_path = os.path.join(save_dir, "word_to_class.pkl")
     
-    main(audio_path, model_path, word_to_class_path)
+    predicted_word, similarity_score = main(audio_path, model_path, word_to_class_path)
+
+    print("Recognition and grading completed.")
