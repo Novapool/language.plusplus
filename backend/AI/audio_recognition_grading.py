@@ -94,7 +94,10 @@ def main(audio_path, model_path, word_to_class_path):
     print(f"Similarity score: {similarity_score:.4f}")
 
 if __name__ == "__main__":
+    save_dir = os.path.join('backend', 'AI')
+
     audio_path = "path/to/your/audio.wav"  # Replace with your audio file path
-    model_path = "trained_model.pth"  # Path to your saved model
-    word_to_class_path = "word_to_class.pkl"  # Path to your saved word_to_class mapping
+    model_path = os.path.join(save_dir, "trained_model.pth")
+    word_to_class_path = os.path.join(save_dir, "word_to_class.pkl")
+    
     main(audio_path, model_path, word_to_class_path)

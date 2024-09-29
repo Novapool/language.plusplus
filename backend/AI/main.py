@@ -80,14 +80,22 @@ def main(pkl_file):
     train_model(model, train_loader, num_epochs, device)
 
 
+    # Define the directory to save the files
+    save_dir = os.path.join('backend', 'AI')
+    
+    # Ensure the directory exists
+    os.makedirs(save_dir, exist_ok=True)
+
     # Save the trained model
-    torch.save(model.state_dict(), 'trained_model.pth')
-    print("Trained model saved as trained_model.pth")
+    model_path = os.path.join(save_dir, 'trained_model.pth')
+    torch.save(model.state_dict(), model_path)
+    print(f"Trained model saved as {model_path}")
 
     # Save the word_to_class mapping
-    with open('word_to_class.pkl', 'wb') as f:
+    word_to_class_path = os.path.join(save_dir, 'word_to_class.pkl')
+    with open(word_to_class_path, 'wb') as f:
         pickle.dump(word_to_class, f)
-    print("Word to class mapping saved as word_to_class.pkl")
+    print(f"Word to class mapping saved as {word_to_class_path}")
     
     # Example: Predict for a new sample
     test_features = torch.tensor(features[0], dtype=torch.float).unsqueeze(0).to(device)
