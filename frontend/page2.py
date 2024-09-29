@@ -1,13 +1,13 @@
 import streamlit as st
 import numpy as np
 import tempfile
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 import base64
 
 from gpt import gpt
 
-load_dotenv()
+# load_dotenv()
 
 
 from st_audiorec import st_audiorec
