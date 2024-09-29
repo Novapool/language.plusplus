@@ -6,15 +6,12 @@ from model import MultiOutputRNN
 from training import train_model
 from utils import predict
 
-# Set CUDA_VISIBLE_DEVICES to use the NVIDIA GPU
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # Use the second GPU
-
 # Path to the preprocessed data
-PKL_FILE = 'data.pkl'
+PKL_FILE = 'language.plusplus/data.pkl'
 
 # Check if CUDA is available and set the device
 if torch.cuda.is_available():
-    device = torch.device('cuda:0')  # Now this will refer to your NVIDIA GPU
+    device = torch.device('cuda:0')  # Use the first (and only) GPU
     torch.cuda.set_device(device)
     print(f'Using CUDA device: {torch.cuda.get_device_name(device)}')
     print(f'Current CUDA device: {torch.cuda.current_device()}')
