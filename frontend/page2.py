@@ -4,6 +4,10 @@ import av
 import numpy as np
 import wave
 import tempfile
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 from st_audiorec import st_audiorec
@@ -11,8 +15,8 @@ from st_audiorec import st_audiorec
 import azure.cognitiveservices.speech as speechsdk
 
 # Replace with your own subscription key and service region (e.g., "westus").
-SUBSCRIPTION_KEY = "7683307099954c9d8b87c8e6d36e53c2"
-SERVICE_REGION = "eastus"
+SUBSCRIPTION_KEY = os.getenv("SUBSCRIPTION_KEY")
+SERVICE_REGION =  os.getenv("SERVICE_REGION")
 
 # Set up the speech configuration
 
