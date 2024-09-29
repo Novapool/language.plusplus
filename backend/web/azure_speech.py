@@ -35,8 +35,6 @@ def getRating(file_name, lang):
         print("Recognized: {}".format(result.text))
         pronunciation_result = speechsdk.PronunciationAssessmentResult(result)
         print("Pronunciation Assessment Result:")
-        print("Accuracy score: {}".format(pronunciation_result.accuracy_score))
-        print("Fluency score: {}".format(pronunciation_result.fluency_score))
-        print("Completeness score: {}".format(pronunciation_result.completeness_score))
+        return (result.text, pronunciation_result.accuracy_score, pronunciation_result.fluency_score)
     else:
-        print("No speech could be recognized: {}".format(result.no_match_details))
+        return ("", 0.0, 0.0)

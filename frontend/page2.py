@@ -7,6 +7,8 @@ import tempfile
 from dotenv import load_dotenv
 import os
 
+from gpt import gpt
+
 load_dotenv()
 
 
@@ -48,34 +50,9 @@ def getRating(file_name, lang):
         print("Recognized: {}".format(result.text))
         pronunciation_result = speechsdk.PronunciationAssessmentResult(result)
         print("Pronunciation Assessment Result:")
-        print("Accuracy score: {}".format(pronunciation_result.accuracy_score))
-        print("Fluency score: {}".format(pronunciation_result.fluency_score))
-        print("Completeness score: {}".format(pronunciation_result.completeness_score))
+        return (result.text, pronunciation_result.accuracy_score, pronunciation_result.fluency_score)
     else:
-        print("No speech could be recognized: {}".format(result.no_match_details))
-
-class AudioProcessor(AudioProcessorBase):
-    def __init__(self):
-        self.frames = []
-
-    def recv(self, frame: av.AudioFrame) -> av.AudioFrame:
-        audio = frame.to_ndarray()
-        self.frames.append(audio)
-        return frame
-
-    def save_audio(self, filename: str):
-        if not self.frames:
-            return
-
-        # Convert the list of frames to a numpy array
-        audio_data = np.concatenate(self.frames, axis=1)
-
-        # Save the audio data to a WAV file
-        with wave.open(filename, 'wb') as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(44100)
-            wf.writeframes(audio_data.tobytes())
+        return ("", 0.0, 0.0)
 
 def page2():
 
@@ -179,14 +156,19 @@ def page2():
 
             if wav_audio_data is not None:
                 # Save the audio data to a temporary file
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-                    tmpfile.write(wav_audio_data)
-                    tmpfile.flush()
-                    if st.session_state.language == "Spanish":
-                        getRating(tmpfile.name, "es-ES")
-                    elif st.session_state.language == "French":
-                        getRating(tmpfile.name, "fr-FR")
- 
+
+                with st.spinner("Processing audio..."):
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
+                        tmpfile.write(wav_audio_data)
+                        tmpfile.flush()
+                        if st.session_state.language == "Spanish":
+                            text, accuracy, fluency = getRating(tmpfile.name, "es-ES")
+                        elif st.session_state.language == "French":
+                            text, accuracy, fluency = getRating(tmpfile.name, "fr-FR")
+
+                        print(text, accuracy, fluency)
+                        gpt(st.session_state.language, text, accuracy, fluency)
+
 
 
 
