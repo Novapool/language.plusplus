@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from model import MultiOutputRNN
 from training import train_model
 from utils import predict
+import pickle
 
 # Path to the preprocessed data
 PKL_FILE = 'data.pkl'
@@ -77,6 +78,16 @@ def main(pkl_file):
     
     # Train the model
     train_model(model, train_loader, num_epochs, device)
+
+
+    # Save the trained model
+    torch.save(model.state_dict(), 'trained_model.pth')
+    print("Trained model saved as trained_model.pth")
+
+    # Save the word_to_class mapping
+    with open('word_to_class.pkl', 'wb') as f:
+        pickle.dump(word_to_class, f)
+    print("Word to class mapping saved as word_to_class.pkl")
     
     # Example: Predict for a new sample
     test_features = torch.tensor(features[0], dtype=torch.float).unsqueeze(0).to(device)
