@@ -47,9 +47,8 @@ def getRating(file_name, lang):
         return (result.text, pronunciation_result.accuracy_score, pronunciation_result.fluency_score)
     else:
         return ("", 0.0, 0.0)
-
+    
 def page2():
-
     # Custom CSS for styling and hiding Streamlit elements
     st.markdown("""
         <style>
@@ -57,18 +56,21 @@ def page2():
         
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #ffffff;
+            background-color: #f0f2f6;
             color: #000000;
+            margin: 0;
+            padding: 0;
         }
         .stApp {
-            background-color: #ffffff;
+            background-color: #f0f2f6;
         }
         .main {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: calc(100vh - 60px);
+            padding-top: 60px;
         }
         .content {
             text-align: center;
@@ -77,14 +79,14 @@ def page2():
             padding: 20px;
         }
         .title {
-            font-size: 5em;
+            font-size: 3em;
             font-weight: 700;
             color: #6a1b9a;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         .subtitle {
-            font-size: 2em;
+            font-size: 1.5em;
             font-weight: 300;
             color: #9c27b0;
             margin-bottom: 30px;
@@ -99,8 +101,9 @@ def page2():
             display: flex;
             justify-content: center;
             gap: 20px;
+            margin-top: 20px;
         }
-        .stButton button {
+        .stButton > button {
             background-color: #6a1b9a;
             color: #ffffff;
             border: none;
@@ -110,8 +113,9 @@ def page2():
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            width: 150px;
         }
-        .stButton button:hover {
+        .stButton > button:hover {
             background-color: #9c27b0;
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
@@ -125,37 +129,70 @@ def page2():
         audio {
             display: none;
         }
+        /* Top bar styles */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #6a1b9a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .top-bar-title {
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-  # Initialize session state for recording and language selection
+    # Add the top bar
+    st.markdown("""
+        <div class="top-bar">
+            <div class="top-bar-title">Language++</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Initialize session state for recording and language selection
     if "recording" not in st.session_state:
         st.session_state.recording = False
     if "language" not in st.session_state:
         st.session_state.language = None
 
-    if st.button("Start Recording"):
-        st.session_state.recording = True
+    st.markdown("<h1 class='title'>Language Practice App</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='subtitle'>Improve your pronunciation skills</p>", unsafe_allow_html=True)
+
+    if not st.session_state.recording:
+        if st.button("Start Recording", key="start_recording"):
+            st.session_state.recording = True
 
     if st.session_state.recording:
-        st.markdown("""<p color='black'>Recording...</p>""", unsafe_allow_html=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Spanish"):
-                st.session_state.language = "Spanish"
-                st.write("You selected Spanish.")
-
+        st.markdown("<h2 class='subtitle'>Select a language:</h2>", unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("French"):
-                st.session_state.language = "French"
-                st.write("You selected French.")
+            st.markdown("<div class='button-container'>", unsafe_allow_html=True)
+            col_left, col_right = st.columns(2)
+            with col_left:
+                if st.button("Spanish", key="spanish_button"):
+                    st.session_state.language = "Spanish"
+            with col_right:
+                if st.button("French", key="french_button"):
+                    st.session_state.language = "French"
+            st.markdown("</div>", unsafe_allow_html=True)
 
         if st.session_state.language:
+            st.write(f"You selected {st.session_state.language}.")
+            st.markdown("<p class='description'>Please start speaking to record your voice.</p>", unsafe_allow_html=True)
+            
             wav_audio_data = st_audiorec()
 
             if wav_audio_data is not None:
-                # Save the audio data to a temporary file
-
                 with st.spinner("Processing audio..."):
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
                         tmpfile.write(wav_audio_data)
@@ -168,13 +205,11 @@ def page2():
                         print(text, accuracy, fluency)
                         gpt(st.session_state.language, text, accuracy, fluency)
 
-                
                 st.markdown(f"""
                     <audio controls autoplay>
                         <source src="data:audio/mp3;base64,{base64.b64encode(open("output.mp3", "rb").read()).decode()}" type="audio/mp3">
                     </audio>
                 """, unsafe_allow_html=True)
-
 
 
 

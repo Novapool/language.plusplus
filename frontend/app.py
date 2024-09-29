@@ -92,6 +92,7 @@ def navigate_to(page):
 # Main content
 if st.session_state.page == 'Home':
     st.markdown("""
+                
         <div class="content">
             <h1 class="title">Language++</h1>
             <h2 class="subtitle">AI Assisted Language Trainer</h2>
