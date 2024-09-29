@@ -12,7 +12,7 @@ def trim_audio(y, sr, threshold_db=-20, min_silence_duration=0.1):
     trimmed, _ = librosa.effects.trim(y, top_db=-threshold_db, frame_length=int(sr*min_silence_duration), hop_length=int(sr*min_silence_duration/4))
     return trimmed
 
-def extract_mfcc(y, sr, n_mfcc=13, max_len=100):
+def extract_mfcc(y, sr, n_mfcc=100, max_len=100):
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
     if mfcc.shape[1] < max_len:
         mfcc = np.pad(mfcc, ((0, 0), (0, max_len - mfcc.shape[1])), mode='constant')
@@ -47,8 +47,9 @@ def process_audio(audio_path, target_duration=3.0):
     return normalized_features
 
 def load_model(model_path, input_size, hidden_size, num_classes, device):
+    print(f"Loading model with input_size: {input_size}")
     model = MultiOutputRNN(input_size, hidden_size, num_classes).to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     model.eval()
     return model
 
@@ -70,6 +71,9 @@ def main(audio_path, model_path, word_to_class_path):
 
     # Process audio
     features = process_audio(audio_path)
+
+    # Print feature shape for debugging
+    print(f"Processed feature shape: {features.shape}")
     
     # Save processed features
     df = pd.DataFrame({"features": [features], "word": ["unknown"]})
@@ -81,10 +85,11 @@ def main(audio_path, model_path, word_to_class_path):
         word_to_class = pickle.load(f)
 
     # Load model
-    input_size = features.shape[0]
+    input_size = features.shape[0]  # This should now be 100
     hidden_size = 128  # Ensure this matches your trained model
     num_classes = len(word_to_class)
     model = load_model(model_path, input_size, hidden_size, num_classes, device)
+
 
     # Predict
     predicted_word, similarity_score = predict(model, features, word_to_class, device)
