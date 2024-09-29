@@ -1,5 +1,8 @@
 import streamlit as st
+import base64
 from page2 import page2
+
+from gpt import gpt
 
 # Set page configuration
 st.set_page_config(page_title="Language++", page_icon="🌐", layout="wide")
@@ -11,11 +14,11 @@ st.markdown("""
     
     body {
         font-family: 'Roboto', sans-serif;
-        background-color: #121212;
-        color: #e0e0e0;
+        background-color: #ffffff;
+        color: #000000;
     }
     .stApp {
-        background-color: #121212;
+        background-color: #ffffff;
     }
     .main {
         display: flex;
@@ -33,19 +36,19 @@ st.markdown("""
     .title {
         font-size: 5em;
         font-weight: 700;
-        color: #9c27b0;
+        color: #6a1b9a;
         margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
     .subtitle {
         font-size: 2em;
         font-weight: 300;
-        color: #b39ddb;
+        color: #9c27b0;
         margin-bottom: 30px;
     }
     .description {
         font-size: 1.2em;
-        color: #bdbdbd;
+        color: #333333;
         margin-bottom: 40px;
         line-height: 1.6;
     }
@@ -55,8 +58,8 @@ st.markdown("""
         gap: 20px;
     }
     .stButton button {
-        background-color: #ffffff;
-        color: #6a1b9a;
+        background-color: #6a1b9a;
+        color: #ffffff;
         border: none;
         border-radius: 25px;
         padding: 12px 24px;
@@ -66,9 +69,9 @@ st.markdown("""
         transition: all 0.3s ease;
     }
     .stButton button:hover {
-        background-color: #f3e5f5;
+        background-color: #9c27b0;
         transform: scale(1.05);
-        box-shadow: 0 0 15px #9c27b0;
+        box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
     }
     /* Hide Streamlit elements */
     #MainMenu, footer, header, .stDeployButton {
@@ -84,6 +87,7 @@ if 'page' not in st.session_state:
 # Function to navigate to a different page
 def navigate_to(page):
     st.session_state.page = page
+    # st.experimental_set_query_params(page=page)
 
 # Main content
 if st.session_state.page == 'Home':
@@ -97,14 +101,13 @@ if st.session_state.page == 'Home':
             <div class="button-container">
     """, unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([4, 1, 4])
     with col1:
         st.write("")
     with col2:
         if st.button("Get Started", key="get_started"):
-            page2()
-        if st.button("Learn More", key="learn_more"):
-            st.write("Discover how Language++ can transform your language skills!")
+            navigate_to('Upload Audio')
+
     with col3:
         st.write("")
     
