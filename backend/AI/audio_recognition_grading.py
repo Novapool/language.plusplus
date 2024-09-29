@@ -102,7 +102,7 @@ def main(audio_path, model_path, word_to_class_path):
 if __name__ == "__main__":
     save_dir = os.path.join('backend', 'AI')
 
-    audio_path = os.path.join('backend', 'AI', 'test_audio', 'audio.wav')
+    audio_path = os.path.join('backend', 'AI', 'test_audio', 'audio.opus')
     model_path = os.path.join(save_dir, "trained_model.pth")
     word_to_class_path = os.path.join(save_dir, "word_to_class.pkl")
     
