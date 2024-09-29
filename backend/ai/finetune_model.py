@@ -1,8 +1,7 @@
 import torch
 import numpy as np
-from datasets import load_from_disk
+from datasets import load_from_disk, load_metric
 from transformers import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2ForCTC, TrainingArguments, Trainer
-from datasets import load_metric
 
 # Load WER metric
 wer_metric = load_metric("wer")
@@ -29,23 +28,24 @@ def compute_metrics(pred):
     return {"wer": wer}
 
 # Load the prepared dataset
-dataset = load_from_disk("./dataset_prep/prepared_dataset")
+dataset = load_from_disk("prepared_dataset")
 
 # Load the pre-trained model and processor
-model_name = "./wav2vec2-ljspeech-gruut"
+model_name = "../wav2vec2-ljspeech-gruut"
 model = Wav2Vec2ForCTC.from_pretrained(model_name)
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
 # Prepare the dataset
-dataset = dataset.map(prepare_dataset, remove_columns=dataset.column_names)
+dataset = dataset.map(prepare_dataset, remove_columns=dataset.column_names["train"], num_proc=4)
 
 # Set up training arguments
 training_args = TrainingArguments(
     output_dir="./results",
     group_by_length=True,
-    per_device_train_batch_size=4,
+    per_device_train_batch_size=16,
+    gradient_accumulation_steps=2,
     evaluation_strategy="steps",
-    num_train_epochs=20,
+    num_train_epochs=30,
     fp16=True,
     save_steps=500,
     eval_steps=500,
