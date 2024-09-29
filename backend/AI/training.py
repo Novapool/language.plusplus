@@ -41,3 +41,6 @@ def train_model(model, train_loader, num_epochs, device):
                 print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}], '
                       f'Loss: {loss.item():.4f}, Word Loss: {loss_word.item():.4f}, '
                       f'Similarity Loss: {loss_similarity.item():.4f}')
+                
+
+    print("Training completed.")
