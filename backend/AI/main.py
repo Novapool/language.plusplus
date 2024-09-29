@@ -6,7 +6,7 @@ from training import train_model
 from utils import predict
 
 # Path to the preprocessed data
-PKL_FILE = 'language.plusplus/data.pkl'
+PKL_FILE = 'data.pkl'
 
 # Check if CUDA is available and set the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
