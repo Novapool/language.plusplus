@@ -6,6 +6,7 @@ import wave
 import tempfile
 from dotenv import load_dotenv
 import os
+import base64
 
 from gpt import gpt
 
@@ -126,6 +127,11 @@ def page2():
         #MainMenu, footer, header, .stDeployButton {
             display: none !important;
         }
+                
+        /* Hide audio controls */
+        audio {
+            display: none;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -168,6 +174,13 @@ def page2():
 
                         print(text, accuracy, fluency)
                         gpt(st.session_state.language, text, accuracy, fluency)
+
+                
+                st.markdown(f"""
+                    <audio controls autoplay>
+                        <source src="data:audio/mp3;base64,{base64.b64encode(open("output.mp3", "rb").read()).decode()}" type="audio/mp3">
+                    </audio>
+                """, unsafe_allow_html=True)
 
 
 
