@@ -47,8 +47,17 @@ def process_audio(audio_path, target_duration=3.0):
     return normalized_features
 
 def load_model(model_path, input_size, hidden_size, num_classes, device):
+    print(f"Loading model with input_size: {input_size}")
     model = MultiOutputRNN(input_size, hidden_size, num_classes).to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    
+    # Load the full state dictionary
+    state_dict = torch.load(model_path, map_location=device)
+    
+    # If the saved model was wrapped in DataParallel, remove the 'module.' prefix
+    if list(state_dict.keys())[0].startswith('module.'):
+        state_dict = {k[7:]: v for k, v in state_dict.items()}
+    
+    model.load_state_dict(state_dict)
     model.eval()
     return model
 
