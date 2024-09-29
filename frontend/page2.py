@@ -17,9 +17,7 @@ SERVICE_REGION =  st.secrets["SERVICE_REGION"]
 # Set up the speech configuration
 
 def getRating(file_name, lang):
-
     speech_config = speechsdk.SpeechConfig(subscription=SUBSCRIPTION_KEY, region=SERVICE_REGION)
-
 
     # Create a pronunciation assessment configuration
     pronunciation_config = speechsdk.PronunciationAssessmentConfig(
@@ -47,7 +45,7 @@ def getRating(file_name, lang):
         return (result.text, pronunciation_result.accuracy_score, pronunciation_result.fluency_score)
     else:
         return ("", 0.0, 0.0)
-    
+
 def page2():
     # Custom CSS for styling and hiding Streamlit elements
     st.markdown("""
@@ -99,8 +97,9 @@ def page2():
         }
         .button-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
             margin-top: 20px;
         }
         .stButton > button {
@@ -108,12 +107,12 @@ def page2():
             color: #ffffff;
             border: none;
             border-radius: 25px;
-            padding: 12px 24px;
-            font-size: 1.2em;
+            padding: 10px 20px;
+            font-size: 1em;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 150px;
+            width: 120px;
         }
         .stButton > button:hover {
             background-color: #9c27b0;
@@ -174,17 +173,25 @@ def page2():
     if st.session_state.recording:
         st.markdown("<h2 class='subtitle'>Select a language:</h2>", unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-            col_left, col_right = st.columns(2)
-            with col_left:
-                if st.button("Spanish", key="spanish_button"):
-                    st.session_state.language = "Spanish"
-            with col_right:
-                if st.button("French", key="french_button"):
-                    st.session_state.language = "French"
-            st.markdown("</div>", unsafe_allow_html=True)
+        # Define language options
+        languages = {
+            "Spanish": "es-ES",
+            "French": "fr-FR",
+            "Korean": "ko-KR",
+            "Japanese": "ja-JP",
+            "Russian": "ru-RU",
+            "Arabic": "ar-SA",
+            "German": "de-DE",
+            "Italian": "it-IT"
+        }
+
+        # Create a 4x2 grid for language buttons
+        cols = st.columns(4)
+        for i, (lang, code) in enumerate(languages.items()):
+            with cols[i % 4]:
+                if st.button(lang, key=f"{lang.lower()}_button"):
+                    st.session_state.language = lang
+                    st.session_state.language_code = code
 
         if st.session_state.language:
             st.write(f"You selected {st.session_state.language}.")
@@ -197,10 +204,7 @@ def page2():
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
                         tmpfile.write(wav_audio_data)
                         tmpfile.flush()
-                        if st.session_state.language == "Spanish":
-                            text, accuracy, fluency = getRating(tmpfile.name, "es-ES")
-                        elif st.session_state.language == "French":
-                            text, accuracy, fluency = getRating(tmpfile.name, "fr-FR")
+                        text, accuracy, fluency = getRating(tmpfile.name, st.session_state.language_code)
 
                         print(text, accuracy, fluency)
                         gpt(st.session_state.language, text, accuracy, fluency)
@@ -211,8 +215,5 @@ def page2():
                     </audio>
                 """, unsafe_allow_html=True)
 
-
-
-    # File uploader
+    # File uploader (commented out as per the original code)
     # audio_file = st.file_uploader("Choose an audio file", type=["wav", "mp3", "ogg", "flac"])
-        # Add your audio processing and prediction code here
