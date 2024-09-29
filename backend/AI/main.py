@@ -1,16 +1,26 @@
-import pandas as pd
+import os
 import torch
+import pandas as pd
 from torch.utils.data import DataLoader, TensorDataset
 from model import MultiOutputRNN
 from training import train_model
 from utils import predict
 
+# Set CUDA_VISIBLE_DEVICES to use the NVIDIA GPU
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # Use the second GPU
+
 # Path to the preprocessed data
 PKL_FILE = 'data.pkl'
 
 # Check if CUDA is available and set the device
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(f'Using device: {device}')
+if torch.cuda.is_available():
+    device = torch.device('cuda:0')  # Now this will refer to your NVIDIA GPU
+    torch.cuda.set_device(device)
+    print(f'Using CUDA device: {torch.cuda.get_device_name(device)}')
+    print(f'Current CUDA device: {torch.cuda.current_device()}')
+else:
+    device = torch.device('cpu')
+    print('CUDA is not available. Using CPU.')
 
 def load_data_from_pkl(pkl_file):
     """Load the .pkl file and return the features and words."""
